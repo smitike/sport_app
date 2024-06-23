@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "161856152695",
+    "project_id": "sm-sports-med",
+    "storage_bucket": "sm-sports-med.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:161856152695:android:f1ed80bc3bbf4cb9a91272",
+        "android_client_info": {
+          "package_name": "com.example.sport_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZc43EU2It6E6bz2T0YYJyR8liT3cQJF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

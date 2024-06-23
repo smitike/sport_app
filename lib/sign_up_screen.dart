@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
-
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -22,42 +20,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Sign Upp',
+            Text(
+              'Sign Up',
               style: TextStyle(color: Colors.purple, fontSize: 32),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Email',
                 hintStyle: TextStyle(color: Colors.grey),
                 filled: true,
                 fillColor: Colors.white24,
               ),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Password',
                 hintStyle: TextStyle(color: Colors.grey),
                 filled: true,
                 fillColor: Colors.white24,
               ),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 final email = _emailController.text;
                 final password = _passwordController.text;
-                context.read<AuthService>().signUp(email, password);
+                context.read<AuthService>().signUp(context, email, password);
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 0, 0, 0)),
-              child: const Text('Sign Up'),
+              child: Text('Sign Up'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple, // Use backgroundColor
+              ),
             ),
           ],
         ),

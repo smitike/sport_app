@@ -4,6 +4,7 @@ import 'firebase_options.dart'; // Import the generated file
 import 'package:provider/provider.dart';
 import 'auth_service.dart';
 import 'sign_in_screen.dart';
+import 'home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         home: SignInScreen(),
       ),
     );

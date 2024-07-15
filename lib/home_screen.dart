@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_map/flutter_map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:logging/logging.dart';
 
 
 //define HomeScreen widget. stateful(can change over time). will be managed by the class _HomeScreenState.
@@ -19,6 +20,7 @@ class HomeScreenState extends State<HomeScreen> {
   final Location locationService = Location();
   late GoogleMapController mapController;
   bool isMapInitialized = false;
+  final Logger logger = Logger('HomeScreen');
 
   @override
   void initState() { //initialize location service when the state is created
@@ -34,6 +36,7 @@ class HomeScreenState extends State<HomeScreen> {
     if (!serviceEnabled) { // if location service is not enabled, if not request
       serviceEnabled = await locationService.requestService();
       if (!serviceEnabled) { //if connot be enabled, exit
+        logger.warning("location disabled");
         return;
       }
     }
@@ -42,26 +45,27 @@ class HomeScreenState extends State<HomeScreen> {
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await locationService.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
+        logger.warning("Location permissions are denied.");
         return;
       }
     }
 
     LocationData locationData = await locationService.getLocation(); // Added line
+      // Add this line
     setState(() {
-      currentLocation = locationData; // Changed line
+      currentLocation = locationData;
     });
 
+
 //when location changes, update currentLocation and call setState to refresh the UI
-    locationService.onLocationChanged.listen((LocationData currentLocation) {
+    locationService.onLocationChanged.listen((LocationData locationData) {
       setState(() {
         currentLocation = locationData;
-        if (mapController != null) {
           mapController.animateCamera(
             CameraUpdate.newLatLng(
               LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
             ),
           );
-        }
       });
     });
   }
@@ -80,7 +84,7 @@ class HomeScreenState extends State<HomeScreen> {
         title: Text('Home screen'), //home screen will show bar titled Home
       ),
       body: currentLocation == null || !isMapInitialized
-          ? Center(child: CircularProgressIndicator()),
+          ? Center(child: CircularProgressIndicator())
           : GoogleMap(
               onMapCreated: onMapCreated,
               initialCameraPosition: CameraPosition(

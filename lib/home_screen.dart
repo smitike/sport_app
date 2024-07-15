@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+// import 'package:flutter_map/flutter_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 
@@ -12,10 +12,13 @@ class HomeScreen extends StatefulWidget {
   HomeScreenState createState() => HomeScreenState();
 }
 
-
-class HomeScreenState extends State<HomeScreen> { //extends the HomeScreen widget to manage it
-  LocationData? currentLocation; //holds current location data. make sure location package is included for LocationData to work
+//extends the HomeScreen widget to manage it
+class HomeScreenState extends State<HomeScreen> {
+  //holds current location data. make sure location package is included for LocationData to work
+  LocationData? currentLocation;
   final Location locationService = Location();
+  late GoogleMapController mapController;
+  bool isMapInitialized = false;
 
   @override
   void initState() { //initialize location service when the state is created
@@ -43,11 +46,30 @@ class HomeScreenState extends State<HomeScreen> { //extends the HomeScreen widge
       }
     }
 
+    LocationData locationData = await locationService.getLocation(); // Added line
+    setState(() {
+      currentLocation = locationData; // Changed line
+    });
+
 //when location changes, update currentLocation and call setState to refresh the UI
     locationService.onLocationChanged.listen((LocationData currentLocation) {
       setState(() {
-        this.currentLocation = currentLocation;
+        currentLocation = locationData;
+        if (mapController != null) {
+          mapController.animateCamera(
+            CameraUpdate.newLatLng(
+              LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+            ),
+          );
+        }
       });
+    });
+  }
+
+  void onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    setState(() {
+      isMapInitialized = true;
     });
   }
 
@@ -55,40 +77,19 @@ class HomeScreenState extends State<HomeScreen> { //extends the HomeScreen widge
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home screenn'), //home screen will show bar titled Home
+        title: Text('Home screen'), //home screen will show bar titled Home
       ),
-      body: currentLocation == null
-          ? Center(child: CircularProgressIndicator())
-          : FlutterMap(
-              options: MapOptions(
-                center: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+      body: currentLocation == null || !isMapInitialized
+          ? Center(child: CircularProgressIndicator()),
+          : GoogleMap(
+              onMapCreated: onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
                 zoom: 15.0,
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c'],
-                ),
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      width: 80.0,
-                      height: 80.0,
-                      point: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-                      builder: (ctx) => Container(
-                        child: Icon(
-                          Icons.location_on,
-                          color: Colors.red,
-                          size: 40.0,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
             ),
     );
   }
 }
-    
-
